@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+  <h2>{{ labels.success_title }}</h2>
+  <p>{{ labels.success_body }}</p>
+  <div class="grid2">
+    <div>
+      <div class="kv"><span>{{ labels.submission_id }}</span><strong>{{ submission.submission_id }}</strong></div>
+      <div class="kv"><span>{{ labels.school }}</span><strong>{{ submission.school_label }}</strong></div>
+      <div class="kv"><span>{{ labels.first_name }}</span><strong>{{ submission.student_first_name }}</strong></div>
+      <div class="kv"><span>{{ labels.last_name }}</span><strong>{{ submission.student_last_name }}</strong></div>
+      <div class="kv"><span>{{ labels.dob }}</span><strong>{{ submission.dob }}</strong></div>
+      <div class="kv"><span>{{ labels.parent_name }}</span><strong>{{ submission.parent_name }}</strong></div>
+      <div class="kv"><span>{{ labels.received }}</span><strong>{{ submission.created_at }}</strong></div>
+    </div>
+    <div>
+      <div class="note">
+        <h3>{{ labels.next_steps }}</h3>
+        <p>{{ labels.next_steps_body }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="actions">
+    <a class="btn" href="{{ url_for('enroll', lang=lang) }}">{{ labels.new_submission }}</a>
+  </div>
+</div>
+{% endblock %}
