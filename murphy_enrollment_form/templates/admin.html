@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+  <div class="admin-head">
+    <h2>Admin – Submissions</h2>
+    <div>
+      <a class="btn secondary" href="{{ url_for('export_csv') }}?lang={{ lang }}">Export CSV</a>
+    </div>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Submission ID</th>
+        <th>School</th>
+        <th>Student</th>
+        <th>DOB</th>
+        <th>Parent/Guardian</th>
+        <th>Received</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for s in submissions %}
+      <tr>
+        <td>{{ s['submission_id'] }}</td>
+        <td>{{ s['school'] }}</td>
+        <td>{{ s['student_last_name'] }}, {{ s['student_first_name'] }}</td>
+        <td>{{ s['dob'] }}</td>
+        <td>{{ s['parent_name'] }}</td>
+        <td>{{ s['created_at'] }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% if submissions|length == 0 %}
+    <p><em>No submissions yet.</em></p>
+  {% endif %}
+</div>
+{% endblock %}

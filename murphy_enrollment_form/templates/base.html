@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ labels.title }} - Murphy ESD</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Murphy Elementary School District" class="logo" />
+      <div class="brand-text">
+        <div class="brand-title">Murphy Elementary School District</div>
+        <div class="brand-sub">{{ labels.title }}</div>
+      </div>
+    </div>
+    <div class="lang">
+      <a class="btn secondary" href="?lang={{ 'es' if lang=='en' else 'en' }}">{{ labels.lang_toggle }}</a>
+    </div>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <small>Murphy ESD • Enrollment Draft</small>
+  </footer>
+
+</body>
+</html>

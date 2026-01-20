@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if email_warning %}
+<div class="card warn">
+  <h2>{{ labels.email_missing_title }}</h2>
+  <p>{{ labels.email_missing_body }}</p>
+  <form method="post">
+    {% for k,v in formdata.items() %}
+      <input type="hidden" name="{{ k }}" value="{{ v|e }}" />
+    {% endfor %}
+    <input type="hidden" name="email_skip_confirmed" value="1" />
+    <div class="row actions">
+      <a class="btn secondary" href="{{ url_for('enroll', lang=lang) }}">{{ labels.back }}</a>
+      <button class="btn" type="submit">{{ labels.continue_no_email }}</button>
+    </div>
+  </form>
+</div>
+{% endif %}
+
+<div class="card">
+  <p class="note">{{ labels.docs_note }}</p>
+
+  <form method="post" novalidate>
+    <input type="hidden" name="lang" value="{{ lang }}" />
+
+    <h2>{{ labels.school }}</h2>
+    <div class="grid2">
+      <label>
+        <span>{{ labels.school }}</span>
+        <select name="school" required>
+          <option value="">--</option>
+          {% for val, name in schools %}
+            <option value="{{ val }}" {% if values.school==val %}selected{% endif %}>{{ name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <h2>{{ labels.student_info }}</h2>
+    <div class="grid3">
+      <label><span>{{ labels.first_name }} *</span><input name="first_name" value="{{ values.first_name }}" required /></label>
+      <label><span>{{ labels.middle_name }}</span><input name="middle_name" value="{{ values.middle_name }}" /></label>
+      <label><span>{{ labels.last_name }} *</span><input name="last_name" value="{{ values.last_name }}" required /></label>
+    </div>
+    <div class="grid3">
+      <label><span>{{ labels.dob }} *</span><input type="date" name="dob" value="{{ values.dob }}" required /></label>
+      <label><span>{{ labels.sex }} *</span>
+        <select name="sex" required>
+          <option value="">--</option>
+          <option value="male" {% if values.sex=='male' %}selected{% endif %}>{{ labels.male }}</option>
+          <option value="female" {% if values.sex=='female' %}selected{% endif %}>{{ labels.female }}</option>
+        </select>
+      </label>
+      <label><span>{{ labels.grade }}</span><input name="grade" value="{{ values.grade }}" /></label>
+    </div>
+    <div class="grid2">
+      <label><span>{{ labels.birth_state }}</span><input name="birth_state" value="{{ values.birth_state }}" /></label>
+      <label><span>{{ labels.birth_country }}</span><input name="birth_country" value="{{ values.birth_country }}" /></label>
+    </div>
+
+    <h2>{{ labels.address }}</h2>
+    <div class="grid2">
+      <label><span>{{ labels.address }} *</span><input name="address1" value="{{ values.address1 }}" required /></label>
+      <label><span>{{ labels.apt }}</span><input name="apt" value="{{ values.apt }}" /></label>
+    </div>
+    <div class="grid3">
+      <label><span>{{ labels.city }} *</span><input name="city" value="{{ values.city }}" required /></label>
+      <label><span>State *</span><input name="state" value="{{ values.state }}" required /></label>
+      <label><span>{{ labels.zip }} *</span><input name="zip" value="{{ values.zip }}" required pattern="\d{5}" /></label>
+    </div>
+
+    <h2>{{ labels.history }}</h2>
+    <div class="grid3">
+      <label><span>{{ labels.az_school }}</span>
+        <select name="az_school" onchange="toggleField(this, 'az_school_details')">
+          <option value="">--</option>
+          <option value="yes" {% if values.az_school=='yes' %}selected{% endif %}>{{ labels.yes }}</option>
+          <option value="no" {% if values.az_school=='no' %}selected{% endif %}>{{ labels.no }}</option>
+        </select>
+        <div id="az_school_details" style="display:{% if values.az_school=='yes' %}block{% else %}none{% endif %};margin-top:10px;">
+          <input type="text" name="az_school_details" placeholder="Please provide details" value="{{ values.az_school_details }}" />
+        </div>
+      </label>
+      <label><span>{{ labels.murphy_before }}</span>
+        <select name="murphy_before" onchange="toggleField(this, 'murphy_before_details')">
+          <option value="">--</option>
+          <option value="yes" {% if values.murphy_before=='yes' %}selected{% endif %}>{{ labels.yes }}</option>
+          <option value="no" {% if values.murphy_before=='no' %}selected{% endif %}>{{ labels.no }}</option>
+        </select>
+        <div id="murphy_before_details" style="display:{% if values.murphy_before=='yes' %}block{% else %}none{% endif %};margin-top:10px;">
+          <input type="text" name="murphy_before_details" placeholder="Please provide details" value="{{ values.murphy_before_details }}" />
+        </div>
+      </label>
+      <label><span>{{ labels.preschool }}</span>
+        <select name="preschool" onchange="toggleField(this, 'preschool_details')">
+          <option value="">--</option>
+          <option value="yes" {% if values.preschool=='yes' %}selected{% endif %}>{{ labels.yes }}</option>
+          <option value="no" {% if values.preschool=='no' %}selected{% endif %}>{{ labels.no }}</option>
+        </select>
+        <div id="preschool_details" style="display:{% if values.preschool=='yes' %}block{% else %}none{% endif %};margin-top:10px;">
+          <input type="text" name="preschool_details" placeholder="Please provide details" value="{{ values.preschool_details }}" />
+        </div>
+      </label>
+    </div>
+    <div class="grid2">
+      <label><span>{{ labels.last_school }}</span><input name="last_school" value="{{ values.last_school }}" /></label>
+      <label><span>{{ labels.last_school_city_state }}</span><input name="last_school_city_state" value="{{ values.last_school_city_state }}" /></label>
+    </div>
+
+    <h2>{{ labels.demographics }}</h2>
+    <div class="grid2">
+      <label><span>{{ labels.ethnicity }}</span>
+        <select name="ethnicity">
+          <option value="">--</option>
+          <option value="yes" {% if values.ethnicity=='yes' %}selected{% endif %}>{{ labels.yes }}</option>
+          <option value="no" {% if values.ethnicity=='no' %}selected{% endif %}>{{ labels.no }}</option>
+        </select>
+      </label>
+      <label><span>{{ labels.tribal }}</span>
+        <select name="tribal_affiliation">
+          <option value="">--</option>
+          <option value="yes" {% if values.tribal_affiliation=='yes' %}selected{% endif %}>{{ labels.yes }}</option>
+          <option value="no" {% if values.tribal_affiliation=='no' %}selected{% endif %}>{{ labels.no }}</option>
+        </select>
+      </label>
+    </div>
+    <fieldset class="fieldset">
+      <legend>{{ labels.race }}</legend>
+      <div class="checks">
+        {% for key, text in race_options %}
+          <label class="check"><input type="checkbox" name="race" value="{{ key }}" {% if key in values.race %}checked{% endif %}/> {{ text }}</label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <h2>{{ labels.transport }}</h2>
+    <div class="grid2">
+      <label><span>{{ labels.transport }}</span>
+        <select name="transport" onchange="toggleTransportOther(this)">
+          <option value="">--</option>
+          {% for val, name in transport_options %}
+            <option value="{{ val }}" {% if values.transport==val %}selected{% endif %}>{{ name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <div id="transport_other" style="display:{% if values.transport=='other' %}block{% else %}none{% endif %};margin-top:10px;">
+        <label><span>Please specify:</span><input type="text" name="transport_other" placeholder="Enter transportation details" value="{{ values.transport_other }}" /></label>
+      </div>
+    </div>
+
+    <h2>{{ labels.siblings }}</h2>
+    <div class="grid2">
+      <label><span>{{ labels.siblings_has_murphy }}</span>
+        <select name="has_murphy_siblings" onchange="updateSiblingCount(this)">
+          <option value="">--</option>
+          <option value="yes" {% if values.has_murphy_siblings=='yes' %}selected{% endif %}>{{ labels.yes }}</option>
+          <option value="no" {% if values.has_murphy_siblings=='no' %}selected{% endif %}>{{ labels.no }}</option>
+        </select>
+      </label>
+      <label id="sibling_count_label" style="display:{% if values.has_murphy_siblings=='yes' %}block{% else %}none{% endif %};"><span>{{ labels.siblings_count }}</span>
+        <input type="number" name="sibling_count" min="0" max="20" value="{{ values.sibling_count or '' }}" onchange="updateSiblingBoxes(this)" />
+      </label>
+    </div>
+    
+    <div id="siblings_container">
+      {% for i in range(1, (values.sibling_count|int) + 1 if values.sibling_count else 1) %}
+        <div class="sibling-box" id="sibling_box_{{ i }}">
+          <h3>Sibling {{ i }}</h3>
+          <div class="grid4">
+            <label><span>{{ labels.sibling_name }}</span><input name="sibling{{ i }}_name" value="{{ values['sibling' ~ i ~ '_name'] }}" /></label>
+            <label><span>{{ labels.sibling_grade }}</span><input name="sibling{{ i }}_grade" value="{{ values['sibling' ~ i ~ '_grade'] }}" /></label>
+            <label><span>{{ labels.sibling_school }}</span><input name="sibling{{ i }}_school" value="{{ values['sibling' ~ i ~ '_school'] }}" /></label>
+            <label><span>{{ labels.sibling_lives }}</span>
+              <select name="sibling{{ i }}_lives">
+                <option value="">--</option>
+                <option value="yes" {% if values['sibling' ~ i ~ '_lives']=='yes' %}selected{% endif %}>{{ labels.yes }}</option>
+                <option value="no" {% if values['sibling' ~ i ~ '_lives']=='no' %}selected{% endif %}>{{ labels.no }}</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <h2>{{ labels.custody }}</h2>
+    <div class="grid2">
+      <label><span>{{ labels.custody_type }}</span><input name="custody_type" value="{{ values.custody_type }}" placeholder="{{ labels.custody_placeholder }}" /></label>
+      <label><span>{{ labels.temp_address }}</span>
+        <select name="temp_address">
+          <option value="">--</option>
+          <option value="yes" {% if values.temp_address=='yes' %}selected{% endif %}>{{ labels.yes }}</option>
+          <option value="no" {% if values.temp_address=='no' %}selected{% endif %}>{{ labels.no }}</option>
+        </select>
+      </label>
+    </div>
+    <div class="grid2">
+      <label><span>{{ labels.entry_us }}</span><input type="date" name="entry_us" value="{{ values.entry_us }}" /></label>
+    </div>
+
+    <h2>{{ labels.services }}</h2>
+    <div class="checks">
+      <label class="check"><input type="checkbox" name="sped" value="1" {% if values.sped %}checked{% endif %}/> {{ labels.sped }}</label>
+      <label class="check"><input type="checkbox" name="plan504" value="1" {% if values.plan504 %}checked{% endif %}/> {{ labels.plan504 }}</label>
+      <label class="check"><input type="checkbox" name="gifted" value="1" {% if values.gifted %}checked{% endif %}/> {{ labels.gifted }}</label>
+      <label class="check"><input type="checkbox" name="refugee" value="1" {% if values.refugee %}checked{% endif %}/> {{ labels.refugee }}</label>
+      <label class="check"><input type="checkbox" name="migrant" value="1" {% if values.migrant %}checked{% endif %}/> {{ labels.migrant }}</label>
+      <label class="check"><input type="checkbox" name="immigrant" value="1" {% if values.immigrant %}checked{% endif %}/> {{ labels.immigrant }}</label>
+    </div>
+
+    <h2>{{ labels.language }}</h2>
+    <div class="grid2">
+      <label><span>{{ labels.home_language }}</span><input name="home_language" value="{{ values.home_language }}" /></label>
+    </div>
+
+    <h2>{{ labels.discipline }}</h2>
+    <div class="grid3">
+      <label><span>{{ labels.expelled }}</span>
+        <select name="expelled">
+          <option value="">--</option>
+          <option value="yes" {% if values.expelled=='yes' %}selected{% endif %}>{{ labels.yes }}</option>
+          <option value="no" {% if values.expelled=='no' %}selected{% endif %}>{{ labels.no }}</option>
+        </select>
+      </label>
+      <label><span>{{ labels.suspended10 }}</span>
+        <select name="suspended10">
+          <option value="">--</option>
+          <option value="yes" {% if values.suspended10=='yes' %}selected{% endif %}>{{ labels.yes }}</option>
+          <option value="no" {% if values.suspended10=='no' %}selected{% endif %}>{{ labels.no }}</option>
+        </select>
+      </label>
+      <label><span>{{ labels.considered }}</span>
+        <select name="considered">
+          <option value="">--</option>
+          <option value="yes" {% if values.considered=='yes' %}selected{% endif %}>{{ labels.yes }}</option>
+          <option value="no" {% if values.considered=='no' %}selected{% endif %}>{{ labels.no }}</option>
+        </select>
+      </label>
+    </div>
+
+    <h2>{{ labels.parent }}</h2>
+    <div class="grid2">
+      <label><span>{{ labels.parent_name }} *</span><input name="parent_name" value="{{ values.parent_name }}" required /></label>
+      <label><span>{{ labels.parent_cell }} *</span><input name="parent_cell" value="{{ values.parent_cell }}" required /></label>
+    </div>
+    <div class="grid2">
+      <label><span>{{ labels.parent_email }}</span><input type="email" name="parent_email" value="{{ values.parent_email }}" /></label>
+    </div>
+
+    <h2>{{ labels.attestation }}</h2>
+    <div class="grid2">
+      <label><span>{{ labels.typed_signature }} *</span><input name="typed_signature" value="{{ values.typed_signature }}" required /></label>
+      <label class="check"><input type="checkbox" name="agree" value="1" {% if values.agree %}checked{% endif %} required /> {{ labels.agree_text }}</label>
+    </div>
+
+    {% if errors %}
+      <div class="errors">
+        <strong>{{ labels.fix_errors }}</strong>
+        <ul>
+          {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <div class="row actions">
+      <button class="btn" type="submit">{{ labels.submit }}</button>
+    </div>
+  </form>
+</div>
+
+<script>
+// Toggle transport other field
+function toggleTransportOther(selectElement) {
+  const otherDiv = document.getElementById('transport_other');
+  if (selectElement.value === 'other') {
+    otherDiv.style.display = 'block';
+  } else {
+    otherDiv.style.display = 'none';
+  }
+}
+
+// Toggle detail fields for school history questions
+function toggleField(selectElement, detailsId) {
+  const detailsDiv = document.getElementById(detailsId);
+  if (selectElement.value === 'yes') {
+    detailsDiv.style.display = 'block';
+  } else {
+    detailsDiv.style.display = 'none';
+  }
+}
+
+// Update sibling count input visibility based on has_murphy_siblings selection
+function updateSiblingCount(selectElement) {
+  const countLabel = document.getElementById('sibling_count_label');
+  if (selectElement.value === 'yes') {
+    countLabel.style.display = 'block';
+  } else {
+    countLabel.style.display = 'none';
+    // Clear sibling boxes if they say no
+    document.querySelector('input[name="sibling_count"]').value = '';
+    updateSiblingBoxes(document.querySelector('input[name="sibling_count"]'));
+  }
+}
+
+// Update sibling boxes based on count input
+function updateSiblingBoxes(countInput) {
+  const count = parseInt(countInput.value) || 0;
+  const container = document.getElementById('siblings_container');
+  
+  // Remove existing sibling boxes
+  const existingBoxes = container.querySelectorAll('.sibling-box');
+  existingBoxes.forEach(box => box.remove());
+  
+  // Create new sibling boxes based on count
+  for (let i = 1; i <= count; i++) {
+    const siblingDiv = document.createElement('div');
+    siblingDiv.className = 'sibling-box';
+    siblingDiv.id = 'sibling_box_' + i;
+    
+    const siblingName = document.querySelector('input[name="sibling' + i + '_name"]');
+    const siblingGrade = document.querySelector('input[name="sibling' + i + '_grade"]');
+    const siblingSchool = document.querySelector('input[name="sibling' + i + '_school"]');
+    const siblingLives = document.querySelector('select[name="sibling' + i + '_lives"]');
+    
+    const siblingNameValue = siblingName ? siblingName.value : '';
+    const siblingGradeValue = siblingGrade ? siblingGrade.value : '';
+    const siblingSchoolValue = siblingSchool ? siblingSchool.value : '';
+    const siblingLivesValue = siblingLives ? siblingLives.value : '';
+    
+    siblingDiv.innerHTML = `
+      <h3>Sibling ` + i + `</h3>
+      <div class="grid4">
+        <label><span>Full Name</span><input name="sibling` + i + `_name" value="` + siblingNameValue + `" /></label>
+        <label><span>Grade</span><input name="sibling` + i + `_grade" value="` + siblingGradeValue + `" /></label>
+        <label><span>School</span><input name="sibling` + i + `_school" value="` + siblingSchoolValue + `" /></label>
+        <label><span>Lives with enrolling child?</span>
+          <select name="sibling` + i + `_lives">
+            <option value="">--</option>
+            <option value="yes" ` + (siblingLivesValue === 'yes' ? 'selected' : '') + `>Yes</option>
+            <option value="no" ` + (siblingLivesValue === 'no' ? 'selected' : '') + `>No</option>
+          </select>
+        </label>
+      </div>
+    `;
+    container.appendChild(siblingDiv);
+  }
+}
+
+// Optional email warning (client-side UX)
+document.addEventListener('submit', function(evt){
+  const form = evt.target;
+  if(!form || form.tagName !== 'FORM') return;
+  const email = form.querySelector('input[name="parent_email"]');
+  const confirmed = form.querySelector('input[name="email_skip_confirmed"]');
+  if(email && email.value.trim()==='' && !confirmed){
+    evt.preventDefault();
+    const msg = {{ labels.email_modal|tojson }};
+    if(confirm(msg)){
+      const hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = 'email_skip_confirmed';
+      hidden.value = '1';
+      form.appendChild(hidden);
+      form.submit();
+    }
+  }
+}, true);
+</script>
+
+{% endblock %}
